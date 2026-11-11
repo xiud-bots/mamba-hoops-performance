@@ -6,14 +6,17 @@ import {
   VolumeX, 
   Maximize2, 
   Minimize2,
-  Dumbbell
+  Dumbbell,
+  LayoutGrid
 } from 'lucide-react';
 import { WORKOUT_DAYS } from '../data/workouts';
 import { playBeep } from '../utils/audio';
 
 interface NavbarProps {
-  activeDayId: string;
+  currentView: 'hub' | 'workout';
+  activeDayId: 'treino-a' | 'treino-b' | 'treino-c' | 'treino-d';
   onSelectDay: (id: 'treino-a' | 'treino-b' | 'treino-c' | 'treino-d') => void;
+  onNavigateHub: () => void;
   onOpenGuidelines: () => void;
   onOpenChecklist: () => void;
   gymMode: boolean;
@@ -23,8 +26,10 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
+  currentView,
   activeDayId,
   onSelectDay,
+  onNavigateHub,
   onOpenGuidelines,
   onOpenChecklist,
   gymMode,
@@ -33,40 +38,58 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleSound,
 }) => {
   return (
-    <header className="sticky top-0 z-40 bg-mamba-dark/90 backdrop-blur-md border-b border-mamba-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
+    <header className="sticky top-0 z-40 bg-mamba-dark/95 backdrop-blur-md border-b border-mamba-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3">
         {/* Top row: Brand & Global Tools */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-mamba-border/60">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-mamba-purple to-mamba-violet p-0.5 shadow-glow-purple flex items-center justify-center shrink-0">
-              <div className="w-full h-full bg-mamba-dark rounded-[10px] flex items-center justify-center">
-                <Dumbbell className="w-5 h-5 text-mamba-cyan" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b border-mamba-border/60">
+          <div className="flex items-center justify-between">
+            <div 
+              onClick={onNavigateHub}
+              className="flex items-center gap-3 cursor-pointer group"
+              title="Voltar ao Hub de Treinos"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-mamba-purple to-mamba-violet p-0.5 shadow-glow-purple flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <div className="w-full h-full bg-mamba-dark rounded-[10px] flex items-center justify-center">
+                  <Dumbbell className="w-5 h-5 text-mamba-cyan" />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-sm sm:text-base font-black tracking-tight text-slate-100 uppercase">
+                    Mamba Hoops Performance
+                  </h1>
+                  <span className="text-[10px] font-mono bg-mamba-purple/20 text-mamba-purple border border-mamba-purple/40 px-2 py-0.2 rounded font-bold">
+                    FASE 1
+                  </span>
+                </div>
+                <p className="text-[11px] text-mamba-muted flex items-center gap-1.5">
+                  <span>Atleta: <strong>Gabriel</strong></span>
+                  <span>•</span>
+                  <span>Fisioterapia & Biomecânica</span>
+                </p>
               </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-100 uppercase">
-                  Mamba Hoops Performance
-                </h1>
-                <span className="text-[10px] font-mono bg-mamba-purple/20 text-mamba-purple border border-mamba-purple/40 px-2 py-0.5 rounded font-bold">
-                  FASE 1
-                </span>
-              </div>
-              <p className="text-[11px] text-mamba-muted flex items-center gap-1.5">
-                <span>Atleta: <strong>Gabriel</strong></span>
-                <span>•</span>
-                <span>Preparador: <strong>@mamba</strong></span>
-                <span>•</span>
-                <span className="text-mamba-emerald">Fisioterapia & Biomecânica</span>
-              </p>
+
+            {/* Mobile Sound Quick Toggle */}
+            <div className="sm:hidden flex items-center gap-1">
+              <button
+                onClick={() => {
+                  onToggleSound();
+                  if (!soundEnabled) playBeep(880, 0.1);
+                }}
+                className="p-2 rounded-xl bg-mamba-card border border-mamba-border text-slate-300"
+                title={soundEnabled ? 'Silenciar som' : 'Ativar som'}
+              >
+                {soundEnabled ? <Volume2 className="w-4 h-4 text-mamba-cyan" /> : <VolumeX className="w-4 h-4 text-mamba-muted" />}
+              </button>
             </div>
           </div>
 
-          {/* Quick Action Buttons */}
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Quick Action Buttons (Desktop / Tablet) */}
+          <div className="hidden sm:flex items-center gap-2 flex-wrap">
             <button
               onClick={onOpenGuidelines}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-mamba-card hover:bg-mamba-surface text-slate-200 border border-mamba-border text-xs font-medium transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-mamba-card hover:bg-mamba-surface text-slate-200 border border-mamba-border text-xs font-medium transition-all active:scale-95"
             >
               <ShieldAlert className="w-4 h-4 text-mamba-emerald" />
               <span>Diretrizes Fisioterapia</span>
@@ -74,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={onOpenChecklist}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-mamba-card hover:bg-mamba-surface text-slate-200 border border-mamba-border text-xs font-medium transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-mamba-card hover:bg-mamba-surface text-slate-200 border border-mamba-border text-xs font-medium transition-all active:scale-95"
             >
               <Sparkles className="w-4 h-4 text-mamba-gold" />
               <span>Checklist 24h</span>
@@ -82,7 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={onToggleGymMode}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all active:scale-95 ${
                 gymMode
                   ? 'bg-mamba-cyan/20 text-mamba-cyan border-mamba-cyan/50 shadow-glow-cyan'
                   : 'bg-mamba-card hover:bg-mamba-surface text-slate-300 border-mamba-border'
@@ -90,7 +113,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Modo Academia com alto contraste e foco"
             >
               {gymMode ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-              <span className="hidden sm:inline">Modo</span> Academia
+              <span>Modo Academia</span>
             </button>
 
             <button
@@ -100,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   playBeep(880, 0.1);
                 }
               }}
-              className="p-1.5 rounded-xl bg-mamba-card hover:bg-mamba-surface text-slate-400 hover:text-slate-100 border border-mamba-border transition-colors"
+              className="p-1.5 rounded-xl bg-mamba-card hover:bg-mamba-surface text-slate-400 hover:text-slate-100 border border-mamba-border transition-colors active:scale-95"
               title={soundEnabled ? 'Silenciar beeps' : 'Ativar avisos sonoros'}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4 text-mamba-cyan" /> : <VolumeX className="w-4 h-4 text-mamba-muted" />}
@@ -109,17 +132,33 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         {/* Bottom row: Day Switcher Tabs */}
-        <nav className="flex items-center gap-2 pt-3 overflow-x-auto no-scrollbar">
+        <nav className="flex items-center gap-2 pt-2.5 overflow-x-auto scrollbar-none touch-pan-x">
+          {/* Hub Tab Button */}
+          <button
+            onClick={onNavigateHub}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border shrink-0 active:scale-95 ${
+              currentView === 'hub'
+                ? 'bg-mamba-cyan text-slate-950 font-bold border-mamba-cyan shadow-md'
+                : 'bg-mamba-dark/70 text-slate-300 hover:text-white border-mamba-border hover:bg-mamba-surface'
+            }`}
+          >
+            <LayoutGrid className="w-4 h-4" />
+            <span>Hub de Treinos</span>
+          </button>
+
+          <span className="w-px h-5 bg-mamba-border/80 mx-1 shrink-0" />
+
+          {/* Individual Workouts */}
           {WORKOUT_DAYS.map((day) => {
-            const isActive = activeDayId === day.id;
+            const isActive = currentView === 'workout' && activeDayId === day.id;
             return (
               <button
                 key={day.id}
                 onClick={() => onSelectDay(day.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border ${
+                className={`flex items-center gap-2 px-3 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border shrink-0 active:scale-95 ${
                   isActive
                     ? 'bg-mamba-surface text-slate-100 shadow-md'
-                    : 'bg-mamba-dark/60 text-mamba-muted hover:text-slate-200 border-transparent hover:border-mamba-border'
+                    : 'bg-mamba-dark/60 text-slate-300 hover:text-slate-100 border-transparent hover:border-mamba-border'
                 }`}
                 style={{
                   borderColor: isActive ? day.accentColor : undefined,
