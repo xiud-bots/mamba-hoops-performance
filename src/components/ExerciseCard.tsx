@@ -31,7 +31,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   gymMode = false 
 }) => {
   // Animation visual view: 'gif' | 'biomech'
-  const [activeTab, setActiveTab] = useState<'gif' | 'biomech'>('gif');
+  const [activeTab, setActiveTab] = useState<'gif' | 'biomech'>(exercise.defaultView || 'gif');
+  const [gifLoadError, setGifLoadError] = useState<boolean>(false);
+  const [isGifLoading, setIsGifLoading] = useState<boolean>(true);
   
   // Parse number of sets from string (e.g. "3 séries" -> 3, "4x6 reps" -> 4)
   const totalSets = Math.min(
@@ -147,15 +149,26 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         {/* Animation Switcher Tabs */}
         <div className="flex items-center bg-mamba-dark p-0.5 rounded-lg border border-mamba-border text-xs">
           <button
-            onClick={() => setActiveTab('gif')}
+            onClick={() => {
+              if (!gifLoadError) setActiveTab('gif');
+            }}
+            disabled={gifLoadError}
+            title={gifLoadError ? 'Asset GIF indisponível na CDN — Modo Biomecânico ativo' : 'Ver animação GIF'}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
               activeTab === 'gif'
                 ? 'bg-mamba-surface text-slate-100 shadow-sm font-medium'
+                : gifLoadError
+                ? 'text-mamba-muted/40 cursor-not-allowed opacity-60'
                 : 'text-mamba-muted hover:text-slate-200'
             }`}
           >
             <Film className="w-3.5 h-3.5 text-mamba-cyan" />
             <span className="hidden sm:inline">Animação</span> GIF
+            {gifLoadError && (
+              <span className="text-[9px] font-mono text-amber-400 bg-amber-400/10 px-1 py-0.2 rounded border border-amber-400/20 ml-0.5">
+                Fallback
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab('biomech')}
@@ -196,16 +209,25 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
       {/* Visual Animation Container */}
       <div className="mb-4 rounded-xl overflow-hidden border border-mamba-border bg-mamba-dark relative">
-        {activeTab === 'gif' ? (
+        {activeTab === 'gif' && !gifLoadError ? (
           <div className="relative w-full h-56 bg-mamba-dark/95 flex items-center justify-center overflow-hidden">
+            {isGifLoading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-mamba-dark/90 z-10">
+                <div className="w-6 h-6 border-2 border-mamba-cyan border-t-transparent rounded-full animate-spin mb-2" />
+                <span className="text-[11px] font-mono text-slate-400">Carregando animação...</span>
+              </div>
+            )}
             <img
               src={exercise.gifUrl}
               alt={exercise.name}
               className="max-h-full max-w-full object-contain filter contrast-105"
               loading="lazy"
+              onLoad={() => setIsGifLoading(false)}
               onError={(e) => {
                 // Fallback to biomech avatar if gif CDN fails
                 (e.target as HTMLElement).style.display = 'none';
+                setGifLoadError(true);
+                setIsGifLoading(false);
                 setActiveTab('biomech');
               }}
             />
@@ -215,10 +237,18 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           </div>
         ) : (
-          <BiomechanicalAvatar 
-            type={exercise.svgModelType} 
-            jointAngles={exercise.jointAngles} 
-          />
+          <div className="relative w-full">
+            <BiomechanicalAvatar 
+              type={exercise.svgModelType} 
+              jointAngles={exercise.jointAngles} 
+            />
+            {gifLoadError && (
+              <div className="absolute top-2 left-2 bg-amber-500/15 border border-amber-500/30 text-amber-300 px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 z-10 backdrop-blur-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                Fallback Biomecânico Ativo
+              </div>
+            )}
+          </div>
         )}
       </div>
 
