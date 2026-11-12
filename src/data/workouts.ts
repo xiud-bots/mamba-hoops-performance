@@ -152,7 +152,7 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
             secondaryMuscles: ['Glúteo Máximo'],
             biomechanicalCue: 'Superband grossa atrás dos joelhos. Canelas perfeitamente verticais (90° em relação ao chão). Sente-se no vazio.',
             physioNote: 'Induz analgesia imediata no tendão patelar por inibição cortical motora, sem cisalhamento articular.',
-            gifUrl: `${GIF_BASE}/TUZLh71.gif`,
+            gifUrl: '/assets/spanish-squat-v1.gif',
             v2: {
               hdWebpUrl: '/assets/v2/a-spanish-squat-hd.webp',
               posterUrl: '/assets/v2/a-spanish-squat-poster.webp',
@@ -564,7 +564,7 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
             secondaryMuscles: ['Glúteos'],
             biomechanicalCue: 'Costas apoiadas, coxas rigorosamente paralelas ao chão (90° no joelho), calcanhares empurrando o chão.',
             physioNote: 'Dose adicional de remodelamento de colágeno patelar em ângulo estritamente seguro.',
-            gifUrl: `${GIF_BASE}/sVQCCeG.gif`,
+            gifUrl: '/assets/wall-sit-v1.gif',
             v2: {
               hdWebpUrl: '/assets/v2/b-wall-sit-hd.webp',
               posterUrl: '/assets/v2/b-wall-sit-poster.webp',
@@ -1197,7 +1197,7 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
             secondaryMuscles: ['Piriforme'],
             biomechanicalCue: 'Deitado de lado com joelhos a 90°. Pés colados, abra o joelho de cima sem rodar o quadril para trás.',
             physioNote: 'O glúteo médio é o principal freio contra o colapso medial do joelho durante aterrissagens em velocidade.',
-            gifUrl: `${GIF_BASE}/WL4EmxJ.gif`,
+            gifUrl: '/assets/clamshell-v1.gif',
             v2: {
               hdWebpUrl: '/assets/v2/c-clamshell-hd.webp',
               posterUrl: '/assets/v2/c-clamshell-poster.webp',
