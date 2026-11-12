@@ -5,16 +5,19 @@ import {
   RotateCcw, 
   CheckCircle2, 
   Circle, 
-  Activity, 
   ShieldAlert, 
   Eye, 
   Film, 
   Zap, 
   Flame, 
-  Clock 
+  Clock,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  Dumbbell,
+  Compass
 } from 'lucide-react';
 import { Exercise } from '../data/workouts';
-import { BiomechanicalAvatar } from './BiomechanicalAvatar';
 import { playTick, playTimerDone } from '../utils/audio';
 import confetti from 'canvas-confetti';
 
@@ -30,10 +33,11 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   workoutColor, 
   gymMode = false 
 }) => {
-  // Animation visual view: 'gif' | 'biomech'
-  const [activeTab, setActiveTab] = useState<'gif' | 'biomech'>(exercise.defaultView || 'gif');
-  const [gifLoadError, setGifLoadError] = useState<boolean>(false);
-  const [isGifLoading, setIsGifLoading] = useState<boolean>(true);
+  // Active Media Tab: 'v1' (ExerciseDB V1 GIF) | 'v2' (ExerciseDB V2 720p HD WebP)
+  const [activeTab, setActiveTab] = useState<'v1' | 'v2'>(exercise.defaultView || 'v2');
+  const [isV1Loading, setIsV1Loading] = useState<boolean>(true);
+  const [isV2Loading, setIsV2Loading] = useState<boolean>(true);
+  const [showV2Details, setShowV2Details] = useState<boolean>(false);
   
   // Parse number of sets from string (e.g. "3 séries" -> 3, "4x6 reps" -> 4)
   const totalSets = Math.min(
@@ -108,7 +112,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         particleCount: 25,
         spread: 60,
         origin: { y: 0.8 },
-        colors: [workoutColor, '#10b981', '#38bdf8'],
+        colors: [workoutColor, '#10b981', '#38bdf8', '#a855f7'],
       });
     }
   };
@@ -150,49 +154,52 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           )}
         </div>
 
-        {/* Animation Switcher Tabs */}
+        {/* ExerciseDB V1 vs V2 Tabs Switcher */}
         <div className="flex items-center bg-mamba-dark p-0.5 rounded-xl border border-mamba-border text-xs">
+          {/* Tab V1 */}
           <button
-            onClick={() => {
-              if (!gifLoadError) setActiveTab('gif');
-            }}
-            disabled={gifLoadError}
-            title={gifLoadError ? 'Asset GIF indisponível na CDN — Modo Biomecânico ativo' : 'Ver animação GIF'}
+            onClick={() => setActiveTab('v1')}
+            title="Visualizar animação clássica ExerciseDB V1 (Loop contínuo)"
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all min-h-[34px] ${
-              activeTab === 'gif'
-                ? 'bg-mamba-surface text-slate-100 shadow-sm font-semibold'
-                : gifLoadError
-                ? 'text-mamba-muted/40 cursor-not-allowed opacity-60'
+              activeTab === 'v1'
+                ? 'bg-mamba-surface text-slate-100 shadow-sm font-semibold border border-mamba-border/60'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Film className="w-3.5 h-3.5 text-mamba-cyan" />
-            <span>GIF</span>
-            {gifLoadError && (
-              <span className="text-[9px] font-mono text-amber-400 bg-amber-400/10 px-1 py-0.2 rounded border border-amber-400/20 ml-0.5">
-                Fallback
-              </span>
-            )}
+            <span className="font-mono text-[11px]">V1</span>
+            <span className="hidden xs:inline text-[10px] text-slate-400">GIF</span>
           </button>
+
+          {/* Tab V2 */}
           <button
-            onClick={() => setActiveTab('biomech')}
+            onClick={() => setActiveTab('v2')}
+            title="Visualizar ExerciseDB V2 em Alta Resolução 720p HD & Passo a Passo"
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all min-h-[34px] ${
-              activeTab === 'biomech'
-                ? 'bg-mamba-surface text-slate-100 shadow-sm font-semibold'
+              activeTab === 'v2'
+                ? 'bg-gradient-to-r from-violet-900/60 to-mamba-surface text-violet-200 shadow-sm font-semibold border border-violet-500/40'
                 : 'text-violet-300/80 hover:text-violet-200'
             }`}
           >
-            <Activity className="w-3.5 h-3.5 text-mamba-purple" />
-            <span>Biomecânico</span>
+            <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+            <span className="font-mono text-[11px] font-bold">V2 HD</span>
+            <span className="text-[9px] font-mono bg-violet-500/20 text-violet-300 px-1 py-0.2 rounded border border-violet-500/30">
+              720p
+            </span>
           </button>
         </div>
       </div>
 
       {/* Title & Core Prescription */}
       <div className="mb-3">
-        <h3 className="text-base sm:text-xl font-bold text-slate-100 leading-snug">
-          {exercise.name}
-        </h3>
+        <div className="flex items-baseline justify-between gap-2">
+          <h3 className="text-base sm:text-xl font-bold text-slate-100 leading-snug">
+            {exercise.name}
+          </h3>
+          <span className="text-[10px] font-mono text-mamba-muted shrink-0 hidden sm:inline">
+            {exercise.v2.equipment}
+          </span>
+        </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1 text-xs text-mamba-muted">
           <div className="flex items-center gap-1 text-slate-200 font-medium">
             <Flame className="w-3.5 h-3.5 text-mamba-gold" />
@@ -211,50 +218,137 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
         </div>
       </div>
 
-      {/* Visual Animation Container */}
-      <div className="mb-3 rounded-xl overflow-hidden border border-mamba-border bg-mamba-dark relative">
-        {activeTab === 'gif' && !gifLoadError ? (
-          <div className="relative w-full h-44 sm:h-52 bg-mamba-dark/95 flex items-center justify-center overflow-hidden">
-            {isGifLoading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-mamba-dark/90 z-10">
+      {/* Media Window Container (framed diagnostic viewport) */}
+      <div className="mb-2 p-1 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900/90 shadow-inner">
+        {activeTab === 'v1' ? (
+          /* ExerciseDB V1 View */
+          <div className="relative w-full h-44 sm:h-52 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+            {isV1Loading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm z-10">
                 <div className="w-6 h-6 border-2 border-mamba-cyan border-t-transparent rounded-full animate-spin mb-2" />
-                <span className="text-[11px] font-mono text-slate-400">Carregando animação...</span>
+                <span className="text-[11px] font-mono text-white">Carregando ExerciseDB V1...</span>
               </div>
             )}
             <img
               src={exercise.gifUrl}
-              alt={exercise.name}
-              className="max-h-full max-w-full object-contain filter contrast-105"
+              alt={`${exercise.name} - ExerciseDB V1`}
+              className="max-h-full max-w-full object-contain"
               loading="lazy"
-              onLoad={() => setIsGifLoading(false)}
-              onError={(e) => {
-                // Fallback to biomech avatar if gif CDN fails
-                (e.target as HTMLElement).style.display = 'none';
-                setGifLoadError(true);
-                setIsGifLoading(false);
-                setActiveTab('biomech');
-              }}
+              onLoad={() => setIsV1Loading(false)}
+              onError={() => setIsV1Loading(false)}
             />
-            <div className="absolute bottom-2 right-2 bg-mamba-dark/80 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 border border-mamba-border/60 flex items-center gap-1">
+            
+            {/* V1 Top-Left Badge */}
+            <div className="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-mamba-cyan border border-mamba-cyan/40 flex items-center gap-1 shadow-sm">
+              <Film className="w-3 h-3 text-mamba-cyan" />
+              ExerciseDB V1 (Loop)
+            </div>
+
+            {/* V1 Bottom-Right Indicator */}
+            <div className="absolute bottom-2 right-2 bg-slate-950/85 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-slate-300 border border-slate-700/60 flex items-center gap-1 shadow-sm">
               <Eye className="w-3 h-3 text-mamba-cyan" />
               Execução Contínua
             </div>
           </div>
         ) : (
-          <div className="relative w-full">
-            <BiomechanicalAvatar 
-              type={exercise.svgModelType} 
-              jointAngles={exercise.jointAngles} 
-            />
-            {gifLoadError && (
-              <div className="absolute top-2 left-2 bg-amber-500/15 border border-amber-500/30 text-amber-300 px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 z-10 backdrop-blur-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                Fallback Biomecânico Ativo
+          /* ExerciseDB V2 View */
+          <div className="relative w-full h-44 sm:h-52 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+            {isV2Loading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm z-10">
+                <div className="w-6 h-6 border-2 border-violet-400 border-t-transparent rounded-full animate-spin mb-2" />
+                <span className="text-[11px] font-mono text-violet-200">Carregando ExerciseDB V2 HD...</span>
               </div>
             )}
+            <img
+              src={exercise.v2.hdWebpUrl}
+              alt={`${exercise.name} - ExerciseDB V2 HD`}
+              className="max-h-full max-w-full object-contain"
+              loading="lazy"
+              onLoad={() => setIsV2Loading(false)}
+              onError={() => setIsV2Loading(false)}
+            />
+
+            {/* V2 Top-Left Badge */}
+            <div className="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-sm px-2.5 py-0.5 rounded text-[10px] font-mono text-violet-300 border border-violet-500/40 flex items-center gap-1 shadow-sm">
+              <Sparkles className="w-3 h-3 text-violet-400" />
+              ExerciseDB V2 • 720p HD
+            </div>
+
+            {/* V2 Top-Right Difficulty Badge */}
+            <div className="absolute top-2 right-2 bg-slate-950/85 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 border border-amber-500/40 flex items-center gap-1 shadow-sm">
+              <span>{exercise.v2.difficulty}</span>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Dedicated Info & Actions Toolbar below Media */}
+      {activeTab === 'v2' ? (
+        <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 px-1 py-1 mb-3 text-xs">
+          <div className="flex items-center gap-1.5 text-slate-300 min-w-0">
+            <Dumbbell className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+            <span className="font-mono text-[11px] text-slate-300 leading-snug">{exercise.v2.equipment}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowV2Details(!showV2Details)}
+            className="self-end xs:self-auto shrink-0 px-2.5 py-1 rounded-lg bg-violet-950/60 hover:bg-violet-900/60 text-violet-300 border border-violet-500/40 font-mono text-[11px] font-semibold flex items-center gap-1.5 transition-all active:scale-95"
+          >
+            <span>{showV2Details ? 'Ocultar Detalhes' : 'Passo a Passo V2'}</span>
+            {showV2Details ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-2 px-1 py-1 mb-3 text-xs text-slate-400">
+          <div className="flex items-center gap-1.5">
+            <Film className="w-3.5 h-3.5 text-mamba-cyan" />
+            <span className="font-mono text-[11px]">ExerciseDB V1 Clássico (GIF 360p)</span>
+          </div>
+          <span className="text-[11px] font-mono text-mamba-cyan">Loop Contínuo</span>
+        </div>
+      )}
+
+      {/* ExerciseDB V2 Expandable Step-by-Step & Pro Tips Drawer */}
+      {activeTab === 'v2' && (showV2Details || gymMode) && (
+        <div className="mb-3 p-3.5 rounded-xl bg-violet-950/20 border border-violet-500/30 space-y-3 animate-fadeIn">
+          {/* Instructions */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-2">
+              <Compass className="w-3.5 h-3.5 text-violet-400" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-violet-300 font-bold">
+                Passo a Passo Oficial (ExerciseDB V2)
+              </span>
+            </div>
+            <div className="space-y-1.5">
+              {exercise.v2.instructions.map((step, idx) => (
+                <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
+                  <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-violet-500/30">
+                    {idx + 1}
+                  </span>
+                  <p className="leading-relaxed">{step}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* V2 Pro Tips */}
+          {exercise.v2.proTips && exercise.v2.proTips.length > 0 && (
+            <div className="pt-2 border-t border-violet-500/20">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-violet-400 font-bold block mb-1">
+                Dicas de Maestria Atlética & Hipertrofia (V2 Pro Tips):
+              </span>
+              <ul className="space-y-1">
+                {exercise.v2.proTips.map((tip, idx) => (
+                  <li key={idx} className="text-xs text-violet-200/90 flex items-start gap-1.5">
+                    <span className="text-violet-400 mt-0.5">•</span>
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Biomechanical Gold Cue */}
       <div className="mb-3 p-3 rounded-xl bg-mamba-surface/60 border border-mamba-border/80">
@@ -313,7 +407,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
       {/* Interactive Rest Timer & Set Checklist Row */}
       <div className="pt-4 border-t border-mamba-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Set Checklist with Thumb-friendly targets */}
+        {/* Set Checklist with Thumb-friendly targets (44px) */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between sm:justify-start gap-2">
             <span className="text-xs font-mono text-mamba-muted">Séries concluídas:</span>

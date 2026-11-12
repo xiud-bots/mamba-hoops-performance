@@ -66,8 +66,8 @@ export const App: React.FC = () => {
         onToggleSound={() => setSoundEnabled(!soundEnabled)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      {/* Main Content Area with Safe Clearance for Mobile Bottom Dock */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 pt-6 pb-36 sm:pt-8 sm:pb-36">
         {viewMode === 'hub' ? (
           <WorkoutHub
             onSelectWorkout={handleSelectWorkout}
