@@ -23,11 +23,14 @@ export interface Exercise {
   secondaryMuscles: string[];
   biomechanicalCue: string;
   physioNote: string;
+  // Genuine Video (Demonstração Humana Real em 720p H.264)
+  videoUrl?: string;
+  posterUrl?: string;
   // ExerciseDB V1 Classic (180p/360p GIF Loop)
   gifUrl: string;
   // ExerciseDB V2 Flagship (720p HD WebP, Step-by-Step Instructions & Pro Tips)
   v2: ExerciseDBV2Data;
-  defaultView?: 'v1' | 'v2';
+  defaultView?: 'video' | 'v2' | 'v1';
   // Opcionais mantidos para compatibilidade
   svgModelType?: 'deadlift' | 'squat' | 'calf' | 'bench' | 'row' | 'pulldown' | 'jump' | 'plank' | 'bridge' | 'sprint' | 'mobility';
   jointAngles?: {
@@ -76,6 +79,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'a-myofascial',
+            videoUrl: '/assets/videos/a-myofascial.mp4',
+            posterUrl: '/assets/posters/a-myofascial.jpg',
+            defaultView: 'video',
             name: 'Liberação Miofascial (Panturrilha & Planta do Pé)',
             category: 'mobilidade',
             sets: '2 séries',
@@ -109,6 +115,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'a-ankle-knee-wall',
+            videoUrl: '/assets/videos/a-ankle-knee-wall.mp4',
+            posterUrl: '/assets/posters/a-ankle-knee-wall.jpg',
+            defaultView: 'video',
             name: 'Dorsiflexão de Tornozelo na Parede (Knee-to-Wall)',
             category: 'mobilidade',
             sets: '2 séries',
@@ -143,6 +152,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'a-spanish-squat',
+            videoUrl: '/assets/videos/a-spanish-squat.mp4',
+            posterUrl: '/assets/posters/a-spanish-squat.jpg',
+            defaultView: 'video',
             name: 'Isometria Espanhola (Spanish Squat com Superband)',
             category: 'mobilidade',
             sets: '3 séries',
@@ -172,12 +184,13 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
                 "Excelente protocolo analgésico: execute antes de treinos de força para diminuir a dor inibitória no tendão patelar."
 ]
             },
-            defaultView: 'v2',
-            svgModelType: 'squat',
             jointAngles: { kneeLimit: 'Trava 90° exata', shinAngle: '90° vertical pura' },
           },
           {
             id: 'a-glute-bridge',
+            videoUrl: '/assets/videos/a-glute-bridge.mp4',
+            posterUrl: '/assets/posters/a-glute-bridge.jpg',
+            defaultView: 'video',
             name: 'Ponte de Glúteo Unilateral (Single-Leg Glute Bridge)',
             category: 'mobilidade',
             sets: '2 séries',
@@ -218,6 +231,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'a-wall-drill',
+            videoUrl: '/assets/videos/a-wall-drill.mp4',
+            posterUrl: '/assets/posters/a-wall-drill.jpg',
+            defaultView: 'video',
             name: 'Wall Drill — Troca de Passada Explosiva (Switch Drill)',
             category: 'potencia',
             sets: '3 séries',
@@ -252,6 +268,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'a-pogo-jumps',
+            videoUrl: '/assets/videos/a-pogo-jumps.mp4',
+            posterUrl: '/assets/posters/a-pogo-jumps.jpg',
+            defaultView: 'video',
             name: 'Pogo Jumps Reativos de Tornozelo (Stiff Ankle)',
             category: 'potencia',
             sets: '3 séries',
@@ -292,6 +311,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'a-trap-bar',
+            videoUrl: '/assets/videos/a-trap-bar.mp4',
+            posterUrl: '/assets/posters/a-trap-bar.jpg',
+            defaultView: 'video',
             name: 'Levantamento Terra Trap Bar (Pegada Alta)',
             category: 'forca',
             sets: '4 séries',
@@ -328,6 +350,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'a-db-row-supported',
+            videoUrl: '/assets/videos/a-db-row-supported.mp4',
+            posterUrl: '/assets/posters/a-db-row-supported.jpg',
+            defaultView: 'video',
             name: 'Remada Curvada com Halteres no Banco Inclinado',
             category: 'forca',
             sets: '3 séries',
@@ -362,6 +387,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'a-seated-calf',
+            videoUrl: '/assets/videos/a-seated-calf.mp4',
+            posterUrl: '/assets/posters/a-seated-calf.jpg',
+            defaultView: 'video',
             name: 'Flexão Plantar Sentado na Máquina para Sóleo',
             category: 'forca',
             sets: '3 séries',
@@ -403,6 +431,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'a-pallof-press',
+            videoUrl: '/assets/videos/a-pallof-press.mp4',
+            posterUrl: '/assets/posters/a-pallof-press.jpg',
+            defaultView: 'video',
             name: 'Pallof Press na Polia ou Superband',
             category: 'core',
             sets: '3 séries',
@@ -436,6 +467,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'a-deadbug',
+            videoUrl: '/assets/videos/a-deadbug.mp4',
+            posterUrl: '/assets/posters/a-deadbug.jpg',
+            defaultView: 'video',
             name: 'Deadbug com Pressão nas Mãos ou Bola Suíça',
             category: 'core',
             sets: '3 séries',
@@ -489,6 +523,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'b-open-books',
+            videoUrl: '/assets/videos/b-open-books.mp4',
+            posterUrl: '/assets/posters/b-open-books.jpg',
+            defaultView: 'video',
             name: 'Mobilidade Torácica Open Books (Deitado de Lado)',
             category: 'mobilidade',
             sets: '2 séries',
@@ -522,6 +559,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'b-wall-slides',
+            videoUrl: '/assets/videos/b-wall-slides.mp4',
+            posterUrl: '/assets/posters/b-wall-slides.jpg',
+            defaultView: 'video',
             name: 'Wall Slides com Rotação Externa Escapular',
             category: 'mobilidade',
             sets: '2 séries',
@@ -555,6 +595,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'b-wall-sit',
+            videoUrl: '/assets/videos/b-wall-sit.mp4',
+            posterUrl: '/assets/posters/b-wall-sit.jpg',
+            defaultView: 'video',
             name: 'Isometria de Agachamento na Parede (Wall Sit 90°)',
             category: 'mobilidade',
             sets: '3 séries',
@@ -596,6 +639,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'b-mb-chest-pass',
+            videoUrl: '/assets/videos/b-mb-chest-pass.mp4',
+            posterUrl: '/assets/posters/b-mb-chest-pass.jpg',
+            defaultView: 'video',
             name: 'Arremesso Explosivo de Medicine Ball contra a Parede',
             category: 'potencia',
             sets: '3 séries',
@@ -629,6 +675,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'b-rotational-slam',
+            videoUrl: '/assets/videos/b-rotational-slam.mp4',
+            posterUrl: '/assets/posters/b-rotational-slam.jpg',
+            defaultView: 'video',
             name: 'Slam Rotacional de Medicine Ball no Chão',
             category: 'potencia',
             sets: '3 séries',
@@ -669,6 +718,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'b-db-bench',
+            videoUrl: '/assets/videos/b-db-bench.mp4',
+            posterUrl: '/assets/posters/b-db-bench.jpg',
+            defaultView: 'video',
             name: 'Supino Reto com Halteres (Dumbbell Bench Press)',
             category: 'forca',
             sets: '4 séries',
@@ -704,6 +756,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'b-lat-pulldown',
+            videoUrl: '/assets/videos/b-lat-pulldown.mp4',
+            posterUrl: '/assets/posters/b-lat-pulldown.jpg',
+            defaultView: 'video',
             name: 'Puxada Alta Pronada ou Neutra na Polia (Lat Pulldown)',
             category: 'forca',
             sets: '3 séries',
@@ -738,6 +793,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'b-face-pull',
+            videoUrl: '/assets/videos/b-face-pull.mp4',
+            posterUrl: '/assets/posters/b-face-pull.jpg',
+            defaultView: 'video',
             name: 'Face Pulls com Rotação Externa na Polia Alta',
             category: 'forca',
             sets: '3 séries',
@@ -779,6 +837,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'b-long-lever-plank',
+            videoUrl: '/assets/videos/b-long-lever-plank.mp4',
+            posterUrl: '/assets/posters/b-long-lever-plank.jpg',
+            defaultView: 'video',
             name: 'Prancha Frontal com Cotovelos à Frente (Long Lever)',
             category: 'core',
             sets: '3 séries',
@@ -812,6 +873,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'b-elevated-glute-bridge',
+            videoUrl: '/assets/videos/b-elevated-glute-bridge.mp4',
+            posterUrl: '/assets/posters/b-elevated-glute-bridge.jpg',
+            defaultView: 'video',
             name: 'Ponte de Glúteo com Calcanhares Elevados',
             category: 'core',
             sets: '3 séries',
@@ -865,6 +929,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'c-fascia-ball',
+            videoUrl: '/assets/videos/c-fascia-ball.mp4',
+            posterUrl: '/assets/posters/c-fascia-ball.jpg',
+            defaultView: 'video',
             name: 'Liberação da Fáscia Plantar com Bolinha',
             category: 'mobilidade',
             sets: '2 séries',
@@ -898,6 +965,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'c-hip-switches',
+            videoUrl: '/assets/videos/c-hip-switches.mp4',
+            posterUrl: '/assets/posters/c-hip-switches.jpg',
+            defaultView: 'video',
             name: '90/90 Hip Switches (Mobilidade Rotacional de Quadril)',
             category: 'mobilidade',
             sets: '2 séries',
@@ -931,6 +1001,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'c-tibialis-raise',
+            videoUrl: '/assets/videos/c-tibialis-raise.mp4',
+            posterUrl: '/assets/posters/c-tibialis-raise.jpg',
+            defaultView: 'video',
             name: 'Ativação de Tibial Anterior na Parede',
             category: 'mobilidade',
             sets: '2 séries',
@@ -971,6 +1044,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'c-snap-downs',
+            videoUrl: '/assets/videos/c-snap-downs.mp4',
+            posterUrl: '/assets/posters/c-snap-downs.jpg',
+            defaultView: 'video',
             name: 'Snap Downs (Mecânica de Aterrissagem Silenciosa)',
             category: 'potencia',
             sets: '3 séries',
@@ -1005,6 +1081,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'c-cmj-submax',
+            videoUrl: '/assets/videos/c-cmj-submax.mp4',
+            posterUrl: '/assets/posters/c-cmj-submax.jpg',
+            defaultView: 'video',
             name: 'Countermovement Jump (CMJ) com Aterrissagem Suave',
             category: 'potencia',
             sets: '3 séries',
@@ -1045,6 +1124,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'c-bulgarian-squat',
+            videoUrl: '/assets/videos/c-bulgarian-squat.mp4',
+            posterUrl: '/assets/posters/c-bulgarian-squat.jpg',
+            defaultView: 'video',
             name: 'Agachamento Búlgaro com Halteres (Amplitude 90°)',
             category: 'forca',
             sets: '3 séries',
@@ -1080,6 +1162,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'c-single-leg-rdl',
+            videoUrl: '/assets/videos/c-single-leg-rdl.mp4',
+            posterUrl: '/assets/posters/c-single-leg-rdl.jpg',
+            defaultView: 'video',
             name: 'Levantamento Terra Romeno Unilateral (Single-Leg RDL)',
             category: 'forca',
             sets: '3 séries',
@@ -1114,6 +1199,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'c-single-standing-calf',
+            videoUrl: '/assets/videos/c-single-standing-calf.mp4',
+            posterUrl: '/assets/posters/c-single-standing-calf.jpg',
+            defaultView: 'video',
             name: 'Elevação de Panturrilha em Pé Unilateral',
             category: 'forca',
             sets: '3 séries',
@@ -1155,6 +1243,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'c-copenhagen-plank',
+            videoUrl: '/assets/videos/c-copenhagen-plank.mp4',
+            posterUrl: '/assets/posters/c-copenhagen-plank.jpg',
+            defaultView: 'video',
             name: 'Prancha Copenhagen Modificada (Joelho no Banco)',
             category: 'core',
             sets: '3 séries',
@@ -1188,6 +1279,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'c-clamshell',
+            videoUrl: '/assets/videos/c-clamshell.mp4',
+            posterUrl: '/assets/posters/c-clamshell.jpg',
+            defaultView: 'video',
             name: 'Abdução de Quadril com Miniband (Clamshell)',
             category: 'core',
             sets: '2 séries',
@@ -1241,6 +1335,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'd-band-lateral-walk',
+            videoUrl: '/assets/videos/d-band-lateral-walk.mp4',
+            posterUrl: '/assets/posters/d-band-lateral-walk.jpg',
+            defaultView: 'video',
             name: 'Caminhada Lateral com Miniband nos Tornozelos',
             category: 'agilidade',
             sets: '2 séries',
@@ -1274,6 +1371,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'd-lateral-lunge',
+            videoUrl: '/assets/videos/d-lateral-lunge.mp4',
+            posterUrl: '/assets/posters/d-lateral-lunge.jpg',
+            defaultView: 'video',
             name: 'Afundo Lateral com Pausa em Base Baixa',
             category: 'agilidade',
             sets: '2 séries',
@@ -1314,6 +1414,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'd-slide-decel',
+            videoUrl: '/assets/videos/d-slide-decel.mp4',
+            posterUrl: '/assets/posters/d-slide-decel.jpg',
+            defaultView: 'video',
             name: 'Base Defensiva com Parada em 2 Tempos (Deceleration Step)',
             category: 'agilidade',
             sets: '4 séries',
@@ -1347,6 +1450,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
           },
           {
             id: 'd-first-step-drive',
+            videoUrl: '/assets/videos/d-first-step-drive.mp4',
+            posterUrl: '/assets/posters/d-first-step-drive.jpg',
+            defaultView: 'video',
             name: 'Projeção de Primeiro Passo da Tripla Ameaça (First Step)',
             category: 'agilidade',
             sets: '4 séries',
@@ -1388,6 +1494,9 @@ export const WORKOUT_DAYS: WorkoutDay[] = [
         exercises: [
           {
             id: 'd-rsa-protocol',
+            videoUrl: '/assets/videos/d-rsa-protocol.mp4',
+            posterUrl: '/assets/posters/d-rsa-protocol.jpg',
+            defaultView: 'video',
             name: 'Protocolo RSA de Basquete (Repeated Sprint Ability 1:5)',
             category: 'esd',
             sets: '2 blocos de 5 tiros',

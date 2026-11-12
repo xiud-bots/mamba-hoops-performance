@@ -15,7 +15,8 @@ import {
   ChevronDown,
   ChevronUp,
   Dumbbell,
-  Compass
+  Compass,
+  Video
 } from 'lucide-react';
 import { Exercise } from '../data/workouts';
 import { playTick, playTimerDone } from '../utils/audio';
@@ -33,11 +34,12 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
   workoutColor, 
   gymMode = false 
 }) => {
-  // Active Media Tab: 'v1' (ExerciseDB V1 GIF) | 'v2' (ExerciseDB V2 720p HD WebP)
-  const [activeTab, setActiveTab] = useState<'v1' | 'v2'>(exercise.defaultView || 'v2');
+  // Active Media Tab: 'video' (Genuine Athlete Video) | 'v2' (ExerciseDB V2 HD) | 'v1' (Classic GIF)
+  const [activeTab, setActiveTab] = useState<'video' | 'v2' | 'v1'>(exercise.defaultView || 'video');
+  const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
   const [isV1Loading, setIsV1Loading] = useState<boolean>(true);
   const [isV2Loading, setIsV2Loading] = useState<boolean>(true);
-  const [showV2Details, setShowV2Details] = useState<boolean>(false);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
   
   // Parse number of sets from string (e.g. "3 séries" -> 3, "4x6 reps" -> 4)
   const totalSets = Math.min(
@@ -121,6 +123,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     ((exercise.restSec - timeLeft) / exercise.restSec) * 100
   );
 
+  const videoSrc = exercise.videoUrl || `/assets/videos/${exercise.id}.mp4`;
+  const posterSrc = exercise.posterUrl || `/assets/posters/${exercise.id}.jpg`;
+
   return (
     <div 
       className={`rounded-2xl border transition-all duration-300 relative overflow-hidden ${
@@ -154,13 +159,47 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           )}
         </div>
 
-        {/* ExerciseDB V1 vs V2 Tabs Switcher */}
-        <div className="flex items-center bg-mamba-dark p-0.5 rounded-xl border border-mamba-border text-xs">
-          {/* Tab V1 */}
+        {/* Media View Mode Switcher */}
+        <div className="flex items-center bg-mamba-dark p-0.5 rounded-xl border border-mamba-border text-xs shrink-0">
+          {/* Tab Vídeo Real */}
           <button
-            onClick={() => setActiveTab('v1')}
-            title="Visualizar animação clássica ExerciseDB V1 (Loop contínuo)"
+            type="button"
+            onClick={() => setActiveTab('video')}
+            title="Visualizar demonstração em vídeo genuíno com atleta real (720p H.264)"
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all min-h-[34px] ${
+              activeTab === 'video'
+                ? 'bg-gradient-to-r from-emerald-950 to-mamba-surface text-emerald-200 shadow-sm font-semibold border border-emerald-500/50'
+                : 'text-slate-400 hover:text-emerald-300'
+            }`}
+          >
+            <Video className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="font-mono text-[11px] font-bold">Vídeo</span>
+            <span className="text-[9px] font-mono bg-emerald-500/20 text-emerald-300 px-1 py-0.2 rounded border border-emerald-500/30">
+              HD
+            </span>
+          </button>
+
+          {/* Tab V2 HD */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('v2')}
+            title="Visualizar Anatomia ExerciseDB V2 em Alta Resolução 720p HD"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all min-h-[34px] ${
+              activeTab === 'v2'
+                ? 'bg-gradient-to-r from-violet-900/60 to-mamba-surface text-violet-200 shadow-sm font-semibold border border-violet-500/40'
+                : 'text-violet-300/80 hover:text-violet-200'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+            <span className="font-mono text-[11px] font-bold">Anatomia</span>
+          </button>
+
+          {/* Tab V1 Classic */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('v1')}
+            title="Visualizar animação clássica ExerciseDB V1"
+            className={`flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all min-h-[34px] ${
               activeTab === 'v1'
                 ? 'bg-mamba-surface text-slate-100 shadow-sm font-semibold border border-mamba-border/60'
                 : 'text-slate-400 hover:text-slate-200'
@@ -168,24 +207,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
           >
             <Film className="w-3.5 h-3.5 text-mamba-cyan" />
             <span className="font-mono text-[11px]">V1</span>
-            <span className="hidden xs:inline text-[10px] text-slate-400">GIF</span>
-          </button>
-
-          {/* Tab V2 */}
-          <button
-            onClick={() => setActiveTab('v2')}
-            title="Visualizar ExerciseDB V2 em Alta Resolução 720p HD & Passo a Passo"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all min-h-[34px] ${
-              activeTab === 'v2'
-                ? 'bg-gradient-to-r from-violet-900/60 to-mamba-surface text-violet-200 shadow-sm font-semibold border border-violet-500/40'
-                : 'text-violet-300/80 hover:text-violet-200'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-            <span className="font-mono text-[11px] font-bold">V2 HD</span>
-            <span className="text-[9px] font-mono bg-violet-500/20 text-violet-300 px-1 py-0.2 rounded border border-violet-500/30">
-              720p
-            </span>
           </button>
         </div>
       </div>
@@ -220,9 +241,72 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 
       {/* Media Window Container (framed diagnostic viewport) */}
       <div className="mb-2 p-1 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900/90 shadow-inner">
-        {activeTab === 'v1' ? (
+        {activeTab === 'video' ? (
+          /* Genuine Video View */
+          <div className="relative w-full h-48 sm:h-56 bg-slate-950 rounded-lg flex items-center justify-center overflow-hidden">
+            {isVideoLoading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm z-10">
+                <div className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin mb-2" />
+                <span className="text-[11px] font-mono text-emerald-200">Carregando Vídeo Genuíno...</span>
+              </div>
+            )}
+            <video
+              key={`vid-${exercise.id}`}
+              src={videoSrc}
+              poster={posterSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              className="w-full h-full object-contain"
+              onCanPlay={() => setIsVideoLoading(false)}
+              onError={() => setIsVideoLoading(false)}
+            />
+            
+            {/* Video Top-Left Badge */}
+            <div className="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-sm px-2.5 py-0.5 rounded text-[10px] font-mono text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 shadow-sm">
+              <Video className="w-3 h-3 text-emerald-400" />
+              Vídeo Genuíno • Atleta Real
+            </div>
+
+            {/* Video Top-Right Quality Badge */}
+            <div className="absolute top-2 right-2 bg-slate-950/85 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-cyan-300 border border-cyan-500/40 flex items-center gap-1 shadow-sm">
+              <span>720p H.264</span>
+            </div>
+          </div>
+        ) : activeTab === 'v2' ? (
+          /* ExerciseDB V2 View */
+          <div className="relative w-full h-48 sm:h-56 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+            {isV2Loading && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm z-10">
+                <div className="w-6 h-6 border-2 border-violet-400 border-t-transparent rounded-full animate-spin mb-2" />
+                <span className="text-[11px] font-mono text-violet-200">Carregando ExerciseDB V2 HD...</span>
+              </div>
+            )}
+            <img
+              src={exercise.v2.hdWebpUrl}
+              alt={`${exercise.name} - ExerciseDB V2 HD`}
+              className="max-h-full max-w-full object-contain"
+              loading="lazy"
+              onLoad={() => setIsV2Loading(false)}
+              onError={() => setIsV2Loading(false)}
+            />
+
+            {/* V2 Top-Left Badge */}
+            <div className="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-sm px-2.5 py-0.5 rounded text-[10px] font-mono text-violet-300 border border-violet-500/40 flex items-center gap-1 shadow-sm">
+              <Sparkles className="w-3 h-3 text-violet-400" />
+              ExerciseDB V2 • 720p HD
+            </div>
+
+            {/* V2 Top-Right Difficulty Badge */}
+            <div className="absolute top-2 right-2 bg-slate-950/85 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 border border-amber-500/40 flex items-center gap-1 shadow-sm">
+              <span>{exercise.v2.difficulty}</span>
+            </div>
+          </div>
+        ) : (
           /* ExerciseDB V1 View */
-          <div className="relative w-full h-44 sm:h-52 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+          <div className="relative w-full h-48 sm:h-56 bg-white rounded-lg flex items-center justify-center overflow-hidden">
             {isV1Loading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm z-10">
                 <div className="w-6 h-6 border-2 border-mamba-cyan border-t-transparent rounded-full animate-spin mb-2" />
@@ -250,79 +334,46 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
               Execução Contínua
             </div>
           </div>
-        ) : (
-          /* ExerciseDB V2 View */
-          <div className="relative w-full h-44 sm:h-52 bg-white rounded-lg flex items-center justify-center overflow-hidden">
-            {isV2Loading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm z-10">
-                <div className="w-6 h-6 border-2 border-violet-400 border-t-transparent rounded-full animate-spin mb-2" />
-                <span className="text-[11px] font-mono text-violet-200">Carregando ExerciseDB V2 HD...</span>
-              </div>
-            )}
-            <img
-              src={exercise.v2.hdWebpUrl}
-              alt={`${exercise.name} - ExerciseDB V2 HD`}
-              className="max-h-full max-w-full object-contain"
-              loading="lazy"
-              onLoad={() => setIsV2Loading(false)}
-              onError={() => setIsV2Loading(false)}
-            />
-
-            {/* V2 Top-Left Badge */}
-            <div className="absolute top-2 left-2 bg-slate-950/85 backdrop-blur-sm px-2.5 py-0.5 rounded text-[10px] font-mono text-violet-300 border border-violet-500/40 flex items-center gap-1 shadow-sm">
-              <Sparkles className="w-3 h-3 text-violet-400" />
-              ExerciseDB V2 • 720p HD
-            </div>
-
-            {/* V2 Top-Right Difficulty Badge */}
-            <div className="absolute top-2 right-2 bg-slate-950/85 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-mono text-amber-300 border border-amber-500/40 flex items-center gap-1 shadow-sm">
-              <span>{exercise.v2.difficulty}</span>
-            </div>
-          </div>
         )}
       </div>
 
       {/* Dedicated Info & Actions Toolbar below Media */}
-      {activeTab === 'v2' ? (
-        <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 px-1 py-1 mb-3 text-xs">
-          <div className="flex items-center gap-1.5 text-slate-300 min-w-0">
-            <Dumbbell className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-            <span className="font-mono text-[11px] text-slate-300 leading-snug">{exercise.v2.equipment}</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowV2Details(!showV2Details)}
-            className="self-end xs:self-auto shrink-0 px-2.5 py-1 rounded-lg bg-violet-950/60 hover:bg-violet-900/60 text-violet-300 border border-violet-500/40 font-mono text-[11px] font-semibold flex items-center gap-1.5 transition-all active:scale-95"
-          >
-            <span>{showV2Details ? 'Ocultar Detalhes' : 'Passo a Passo V2'}</span>
-            {showV2Details ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-          </button>
+      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2 px-1 py-1 mb-3 text-xs">
+        <div className="flex items-center gap-1.5 text-slate-300 min-w-0">
+          <Dumbbell className={`w-3.5 h-3.5 shrink-0 ${activeTab === 'video' ? 'text-emerald-400' : activeTab === 'v2' ? 'text-violet-400' : 'text-mamba-cyan'}`} />
+          <span className="font-mono text-[11px] text-slate-300 leading-snug">{exercise.v2.equipment}</span>
         </div>
-      ) : (
-        <div className="flex items-center justify-between gap-2 px-1 py-1 mb-3 text-xs text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <Film className="w-3.5 h-3.5 text-mamba-cyan" />
-            <span className="font-mono text-[11px]">ExerciseDB V1 Clássico (GIF 360p)</span>
-          </div>
-          <span className="text-[11px] font-mono text-mamba-cyan">Loop Contínuo</span>
-        </div>
-      )}
+        <button
+          type="button"
+          onClick={() => setShowDetails(!showDetails)}
+          className={`self-end xs:self-auto shrink-0 px-2.5 py-1 rounded-lg border font-mono text-[11px] font-semibold flex items-center gap-1.5 transition-all active:scale-95 ${
+            activeTab === 'video'
+              ? 'bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 border-emerald-500/40'
+              : activeTab === 'v2'
+              ? 'bg-violet-950/60 hover:bg-violet-900/60 text-violet-300 border-violet-500/40'
+              : 'bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border-slate-600/40'
+          }`}
+        >
+          <span>{showDetails ? 'Ocultar Detalhes' : 'Instruções & Biomecânica'}</span>
+          {showDetails ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+        </button>
+      </div>
 
-      {/* ExerciseDB V2 Expandable Step-by-Step & Pro Tips Drawer */}
-      {activeTab === 'v2' && (showV2Details || gymMode) && (
-        <div className="mb-3 p-3.5 rounded-xl bg-violet-950/20 border border-violet-500/30 space-y-3 animate-fadeIn">
+      {/* Step-by-Step Instructions & Pro Tips Drawer */}
+      {(showDetails || gymMode) && (
+        <div className="mb-3 p-3.5 rounded-xl bg-slate-900/90 border border-slate-700/80 space-y-3 animate-fadeIn">
           {/* Instructions */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <Compass className="w-3.5 h-3.5 text-violet-400" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-violet-300 font-bold">
-                Passo a Passo Oficial (ExerciseDB V2)
+              <Compass className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
+                Passo a Passo Biomecânico Oficial
               </span>
             </div>
             <div className="space-y-1.5">
               {exercise.v2.instructions.map((step, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                  <span className="w-4 h-4 rounded-full bg-violet-500/20 text-violet-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-violet-500/30">
+                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-emerald-500/30">
                     {idx + 1}
                   </span>
                   <p className="leading-relaxed">{step}</p>
@@ -331,17 +382,18 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
             </div>
           </div>
 
-          {/* V2 Pro Tips */}
+          {/* Pro Tips */}
           {exercise.v2.proTips && exercise.v2.proTips.length > 0 && (
-            <div className="pt-2 border-t border-violet-500/20">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-violet-400 font-bold block mb-1">
-                Dicas de Maestria Atlética & Hipertrofia (V2 Pro Tips):
-              </span>
-              <ul className="space-y-1">
+            <div className="pt-2 border-t border-slate-800">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span className="text-[11px] font-mono text-amber-300 font-semibold">Pro Tips (@mamba & Fisioterapia)</span>
+              </div>
+              <ul className="space-y-1 text-[11px] text-slate-300">
                 {exercise.v2.proTips.map((tip, idx) => (
-                  <li key={idx} className="text-xs text-violet-200/90 flex items-start gap-1.5">
-                    <span className="text-violet-400 mt-0.5">•</span>
-                    <span>{tip}</span>
+                  <li key={idx} className="flex items-start gap-1.5 text-slate-300">
+                    <span className="text-amber-400 mt-0.5">•</span>
+                    <span className="leading-relaxed">{tip}</span>
                   </li>
                 ))}
               </ul>
